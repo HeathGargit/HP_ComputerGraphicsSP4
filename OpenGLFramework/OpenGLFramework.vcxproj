@@ -147,18 +147,26 @@
   <ItemGroup>
     <ClCompile Include="..\src\Gizmos.cpp" />
     <ClCompile Include="..\src\gl_core_4_4.c" />
+    <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="IApplication.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="oldmain.oldcpp" />
     <ClCompile Include="MyApplication.cpp" />
+    <ClCompile Include="Shaderinator.cpp" />
+    <ClCompile Include="tiny_obj_loader.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Gizmos.h" />
     <ClInclude Include="..\src\gl_core_4_4.h" />
+    <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="IApplication.h" />
     <ClInclude Include="MyApplication.h" />
+    <ClInclude Include="OBJVertex.h" />
+    <ClInclude Include="OpenGLInfo.h" />
+    <ClInclude Include="Shaderinator.h" />
+    <ClInclude Include="tiny_obj_loader.h" />
+    <ClInclude Include="Vertex.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

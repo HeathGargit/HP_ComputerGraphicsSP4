@@ -1,0 +1,13 @@
+﻿  main.cpp
+d:\documents\aie\computer_graphics\openglframework\openglframework\camera.h(5): fatal error C1083: Cannot open include file: 'glm/mat4x4.hpp': No such file or directory
+  Shaderinator.cpp
+d:\documents\aie\computer_graphics\openglframework\openglframework\shaderinator.cpp(4): fatal error C1083: Cannot open include file: 'gl_core_4_4.h': No such file or directory
+  MyApplication.cpp
+d:\documents\aie\computer_graphics\openglframework\openglframework\myapplication.cpp(1): fatal error C1083: Cannot open include file: 'gl_core_4_4.h': No such file or directory
+  Camera.cpp
+d:\documents\aie\computer_graphics\openglframework\openglframework\camera.h(5): fatal error C1083: Cannot open include file: 'glm/mat4x4.hpp': No such file or directory
+  Application.cpp
+d:\documents\aie\computer_graphics\openglframework\openglframework\application.cpp(1): fatal error C1083: Cannot open include file: 'gl_core_4_4.h': No such file or directory
+  Gizmos.cpp
+d:\documents\aie\computer_graphics\openglframework\src\gizmos.h(3): fatal error C1083: Cannot open include file: 'glm/fwd.hpp': No such file or directory
+  Generating Code...
