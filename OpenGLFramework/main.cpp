@@ -3,7 +3,7 @@
 
 int main()
 {
-	MyApplication* myApp = new MyApplication("Week 4");
+	MyApplication* myApp = new MyApplication("Week 5");
 	if (myApp->startup())
 	{
 		while (myApp->update())

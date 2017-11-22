@@ -19,7 +19,7 @@ void Camera::update(float deltatime)
 	//keyboard inputs
 	if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		auto p = getPosition() + getForward() * -m_speed * 10 * deltatime;
+		auto p = getPosition() + getForward() * -m_speed * deltatime;
 		setPosition(p);
 	}
 	if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS)
@@ -128,7 +128,7 @@ Camera::Camera(GLFWwindow* window, const glm::mat4& world)
 {
 	m_window = window;
 	m_worldTransform = world;
-	m_speed = 1.0f;
+	m_speed = 10.0f;
 	m_dirty = true;
 	m_last_x = -1;
 	m_last_y = -1;
