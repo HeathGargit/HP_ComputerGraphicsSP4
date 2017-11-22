@@ -42,6 +42,9 @@
     <ClCompile Include="Shaderinator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Objectinator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Gizmos.h">
@@ -75,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="OBJVertex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Objectinator.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

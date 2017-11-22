@@ -152,6 +152,7 @@
     <ClCompile Include="IApplication.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyApplication.cpp" />
+    <ClCompile Include="Objectinator.cpp" />
     <ClCompile Include="Shaderinator.cpp" />
     <ClCompile Include="tiny_obj_loader.cc" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="IApplication.h" />
     <ClInclude Include="MyApplication.h" />
+    <ClInclude Include="Objectinator.h" />
     <ClInclude Include="OBJVertex.h" />
     <ClInclude Include="OpenGLInfo.h" />
     <ClInclude Include="Shaderinator.h" />

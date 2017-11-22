@@ -11,6 +11,7 @@
 #include "OBJVertex.h"
 #include "OpenGLInfo.h"
 #include "tiny_obj_loader.h"
+#include "Objectinator.h"
 
 using namespace aie;
 using glm::vec3;
@@ -105,6 +106,7 @@ bool MyApplication::startup()
 		delete[] infoLog;
 	}
 
+	/*//tinyobject loading of object.
 	tinyobj::attrib_t attribs;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -113,8 +115,12 @@ bool MyApplication::startup()
 	if (model_load_success)
 	{
 		createOpenGLBuffers(attribs, shapes);
-	}
+	}*/
+
+	Objectinator m_Bunny("./models/stanford/Bunny.obj");
+	m_Objects.push_back(m_Bunny);
 	
+	//setting up deltatime
 	currentTime = (float)glfwGetTime();
 	deltaTime = 0;
 
@@ -130,21 +136,22 @@ bool MyApplication::update()
 		return false;
 	}
 
+	//update deltatime
 	float previousTime = currentTime;
 	currentTime = (float)glfwGetTime();
 	deltaTime = currentTime - previousTime;
 
+	//update the camera
 	m_camera->update(deltaTime);
 
-	glfwPollEvents(); //get inputs
+	//get inputs
+	glfwPollEvents();
 
 	return true;
 }
 
 void MyApplication::draw()
 {
-	//view = glm::lookAt(vec3(10 * cos(rotation), 10, 10 * sin(rotation)), vec3(0, 0, 0), vec3(0, 1, 0));
-
 	glClearColor(0.4f, 0.4f, 0.4f, 1.0f); //background colour
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //this cleares the screen and draws the background colour?
 
@@ -152,20 +159,21 @@ void MyApplication::draw()
 
 	glUseProgram(m_programID);
 
-	//Gizmos::clear();
-	//Gizmos::addTransform(glm::mat4(1));
-
-	//Gizmos::draw(m_camera->projectView()); //must be in this order.
-	
 	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
 	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_camera->projectView()));
 
-	//glBindVertexArray(m_VAO);
-	for (auto& gl : m_glInfo)
+	//draw all triangles in the object
+	/*for (auto& gl : m_glInfo)
 	{
 		glBindVertexArray(gl.m_VAO);
 		glDrawArrays(GL_TRIANGLES, 0, gl.m_faceCount * 3);
+	}*/
+	for (auto object : m_Objects)
+	{
+		object.draw();
 	}
+
+
 		
 	glBindVertexArray(0);
 

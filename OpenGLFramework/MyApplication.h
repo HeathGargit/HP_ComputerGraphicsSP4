@@ -6,6 +6,7 @@
 #include <GLFW\glfw3.h>
 #include "tiny_obj_loader.h"
 #include "OpenGLInfo.h"
+#include "Objectinator.h"
 
 class MyApplication : public IApplication
 {
@@ -20,6 +21,7 @@ private:
 	void createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<tinyobj::shape_t>& shapes);
 
 	std::vector<OpenGLInfo> m_glInfo;
+	std::vector<Objectinator> m_Objects;
 
 	unsigned int m_VAO;
 	unsigned int m_VBO;
