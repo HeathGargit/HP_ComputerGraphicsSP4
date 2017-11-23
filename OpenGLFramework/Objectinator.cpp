@@ -5,6 +5,8 @@
 #include <GLFW\glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 Objectinator::Objectinator(char * inputString)
 {
@@ -16,16 +18,51 @@ Objectinator::Objectinator(char * inputString)
 	bool model_load_success = tinyobj::LoadObj(&attribs, &shapes, &materials, &err, inputString);
 	if (model_load_success)
 	{
-		createOpenGLBuffers(attribs, shapes);
+		createOpenGLBuffers(attribs, shapes, materials, nullptr);
+		printf(err.c_str());
+	}
+	else
+	{
+		throw std::exception("Couldn't load file!");
 	}
 }
+
+Objectinator::Objectinator(char * fileInputString, char * materialLocationInputString)
+{
+	//tinyobject loading of object.
+	tinyobj::attrib_t attribs;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string err;
+
+	bool open_file_success = tinyobj::LoadObj(&attribs, &shapes, &materials, &err, fileInputString, materialLocationInputString);
+	if (open_file_success)
+	{
+		printf(err.c_str());
+		createOpenGLBuffers(attribs, shapes, materials, materialLocationInputString);
+	}
+	else
+	{
+		throw std::exception("Couldn't Load File and/or material!");
+	}
+}
+
+
 
 Objectinator::~Objectinator()
 {
 }
 
-void Objectinator::draw()
+void Objectinator::draw(const unsigned int programID)
 {
+	//set texture slot
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_diffuse_material);
+
+	//tell the shader where it is
+	unsigned int loc = (glGetUniformLocation(programID, "diffuse"));
+	glUniform1i(loc, 0);
+
 	//draw all triangles in the object
 	for (auto& gl : m_glInfo)
 	{
@@ -34,7 +71,7 @@ void Objectinator::draw()
 	}
 }
 
-void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<tinyobj::shape_t>& shapes)
+void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<tinyobj::shape_t>& shapes, std::vector<tinyobj::material_t>& materials, const char* mat_loc)
 {
 	m_glInfo.resize(shapes.size());
 
@@ -78,8 +115,35 @@ void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<t
 				}
 
 				vertices.push_back(v);
+
+
 			}
 			index += face;
+		}
+
+		if (!materials.empty())
+		{
+			if (!materials[0].diffuse_texname.empty())
+			{
+				int imageWidth = 0, imageHeight = 0, imageFormat = 0;
+
+				std::string locatinate = mat_loc + materials[0].diffuse_texname;
+				printf(locatinate.c_str());
+
+				//use stbi to read the image file into an unsigned int
+				unsigned char* data = stbi_load(locatinate.c_str(), &imageWidth, &imageHeight, &imageFormat, STBI_default);
+
+				//pass the loaded image to the graphics card through a handle
+				glGenTextures(1, &m_diffuse_material); //the handle
+				glBindTexture(GL_TEXTURE_2D, m_diffuse_material);
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+				//unload the image
+				stbi_image_free(data);
+			}
+			
 		}
 
 		//bind vertex data - this puts all the data into the buffer for the vid card.

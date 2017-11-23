@@ -6,6 +6,7 @@
 #include <GLFW\glfw3.h>
 #include "tiny_obj_loader.h"
 #include "OpenGLInfo.h"
+#include "Objectinator.h"
 
 class MyApplication : public IApplication
 {
@@ -17,17 +18,14 @@ public:
 	void shutdown()	override;
 
 private:
-	void generateGrid(unsigned int, unsigned int);
-	void generateGround();
+	void createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<tinyobj::shape_t>& shapes);
 
-	unsigned int m_rows;
-	unsigned int m_cols;
+	std::vector<OpenGLInfo> m_glInfo;
+	std::vector<Objectinator> m_Objects;
 
 	unsigned int m_VAO;
 	unsigned int m_VBO;
 	unsigned int m_IBO;
-
-	unsigned int m_texture;
 
 	unsigned int m_programID;
 
@@ -37,10 +35,8 @@ private:
 	float m_time_scale;
 	glm::mat4 m_view;
 	glm::mat4 m_projection;
-	float rotation;
 	float currentTime;
 	float deltaTime;
-
 
 	Camera* m_camera;
 };
