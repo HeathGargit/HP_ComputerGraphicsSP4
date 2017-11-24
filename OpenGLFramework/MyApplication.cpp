@@ -63,11 +63,9 @@ bool MyApplication::startup()
 	auto minor = ogl_GetMinorVersion();
 	printf("GL: %i.%i\n", major, minor);
 
-	//Gizmos::create(1000, 1000, 1000, 1000);//gizmos is an AIE thing to make drawing primatives easy
-
 	//these set up the camera
 	//VIEW DEFINES WHERE THE CAMERA IS
-	mat4 view = glm::lookAt(vec3(0, 20.0f, 0.1f)/*where the camera is?*/, vec3(0, 0, 0)/*what you're looking at*/, vec3(0, 1, 0)/*upwards direction*/);
+	mat4 view = glm::lookAt(vec3(3.0f, 1.0f, 0.1f)/*where the camera is?*/, vec3(0, 0, 0)/*what you're looking at*/, vec3(0, 1, 0)/*upwards direction*/);
 	//PROJECITON DEFINES THE ANGLE OF THE VIEW
 	mat4  projection = glm::perspective(glm::pi<float>() * 0.25f, 16.f / 9.f/*aspect ratio of the projection*/, 0.1f/*near clipping plane*/, 1000.f/*far clipping plane*/);
 	//THESE ALWAYS HAVE TO BE MULTIPLIED IN THIS ORDER!!!! (otherwise it will look weird)
@@ -84,8 +82,8 @@ bool MyApplication::startup()
 
 	int success = GL_FALSE;
 
-	Shaderinator vertexShader("./shaders/week6vertexshader.txt", GL_VERTEX_SHADER);
-	Shaderinator fragmentShader("./shaders/week6fragmentshader.txt", GL_FRAGMENT_SHADER);
+	Shaderinator vertexShader("./shaders/week7vertexshader.txt", GL_VERTEX_SHADER);
+	Shaderinator fragmentShader("./shaders/week7fragmentshader.txt", GL_FRAGMENT_SHADER);
 
 	//create the shader "program" by attaching the tweo compiled shaders and linking them together
 	m_programID = glCreateProgram();
@@ -108,11 +106,13 @@ bool MyApplication::startup()
 	}
 
 	Objectinator m_Bunny("./models/soulspear/soulspear.obj", "./models/soulspear/");
+	//Objectinator m_Bunny("./models/stanford/Bunny.obj");
 	m_Objects.push_back(m_Bunny);
 	
 	//setting up deltatime
 	currentTime = (float)glfwGetTime();
 	deltaTime = 0;
+	m_rotation = 0;
 
 	return true;
 }
@@ -130,6 +130,7 @@ bool MyApplication::update()
 	float previousTime = currentTime;
 	currentTime = (float)glfwGetTime();
 	deltaTime = currentTime - previousTime;
+	m_rotation += deltaTime;
 
 	//update the camera
 	m_camera->update(deltaTime);
@@ -149,8 +150,29 @@ void MyApplication::draw()
 
 	glUseProgram(m_programID);
 
+	//shader uniform set-ups.
 	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
 	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_camera->projectView()));
+
+	glm::vec3 light_direction = glm::vec3(cos(m_rotation), 0, sin(m_rotation));
+	unsigned int lightDirection = glGetUniformLocation(m_programID, "lightDirection");
+	glUniform3fv(lightDirection, 1, &light_direction[0]);
+
+	glm::vec3 light_colour = glm::vec3(0.5, 1, 1);
+	unsigned int lightColour = glGetUniformLocation(m_programID, "lightColour");
+	glUniform3fv(lightColour, 1, &light_colour[0]);
+
+	glm::vec3 camera_position = m_camera->getPosition();
+	unsigned int CameraPos = glGetUniformLocation(m_programID, "CameraPos");
+	glUniform3fv(CameraPos, 1, &camera_position[0]);
+
+	float specular_power = 1.0f;
+	unsigned int SpecPow = glGetUniformLocation(m_programID, "SpecPow");
+	glUniform1f(SpecPow, specular_power);
+
+	unsigned int time = glGetUniformLocation(m_programID, "time");
+	glUniform1f(time, m_rotation);
+
 
 	//draw all your objects.
 	for (auto object : m_Objects)

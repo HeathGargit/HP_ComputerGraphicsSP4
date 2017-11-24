@@ -1,0 +1,23 @@
+#version 410
+layout(location=0) in vec3 position;
+layout(location=1) in vec3 normal;
+layout(location=2) in vec2 texCoord;
+
+out vec2 TexCoord;
+out vec3 Normal;
+out vec4 vPosition;
+
+uniform mat4 projectionViewWorldMatrix;
+uniform float time;
+
+
+void main() 
+{ 
+	Normal = normal;
+    TexCoord = texCoord;
+	vPosition = vec4(position, 1);
+	vec4 newp = vec4(position, 1.0f);
+	newp.y = newp.y + (0.75f * sin(time));
+	
+    gl_Position = projectionViewWorldMatrix * newp;
+}

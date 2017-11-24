@@ -43,6 +43,7 @@ Objectinator::Objectinator(char * fileInputString, char * materialLocationInputS
 	}
 	else
 	{
+		printf(err.c_str());
 		throw std::exception("Couldn't Load File and/or material!");
 	}
 }
@@ -111,7 +112,7 @@ void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<t
 				if (attribs.texcoords.size() > 0)
 				{
 					v.u = attribs.texcoords[2 * idx.texcoord_index + 0];
-					v.v = attribs.texcoords[2 * idx.texcoord_index + 1];
+					v.v = 1 - attribs.texcoords[2 * idx.texcoord_index + 1];
 				}
 
 				vertices.push_back(v);
@@ -121,7 +122,7 @@ void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<t
 			index += face;
 		}
 
-		if (!materials.empty())
+		if (!materials.empty() && mat_loc != nullptr)
 		{
 			if (!materials[0].diffuse_texname.empty())
 			{
@@ -150,7 +151,7 @@ void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<t
 		glBindBuffer(GL_ARRAY_BUFFER, m_glInfo[shapeIndex].m_VBO); //bind the vertex buffer for input
 		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(OBJVertex), vertices.data(), GL_STATIC_DRAW); //input the vertex data into the buffer
 
-																											 //this sets up the first three floats of each vertex as the position
+		//this sets up the first three floats of each vertex as the position
 		glEnableVertexAttribArray(0); //position
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_TRUE, sizeof(OBJVertex), 0);//this defines the position as three floats with offset of 0 form the start of the vertex
 

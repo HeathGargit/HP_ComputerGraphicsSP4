@@ -37,6 +37,7 @@ private:
 	glm::mat4 m_projection;
 	float currentTime;
 	float deltaTime;
+	float m_rotation;
 
 	Camera* m_camera;
 };
