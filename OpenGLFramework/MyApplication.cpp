@@ -154,7 +154,8 @@ void MyApplication::draw()
 	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
 	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_camera->projectView()));
 
-	glm::vec3 light_direction = glm::vec3(cos(m_rotation), 0, sin(m_rotation));
+	//glm::vec3 light_direction = glm::vec3(cos(m_rotation), 0, sin(m_rotation));
+	glm::vec3 light_direction = glm::vec3(0, 3, 0);
 	unsigned int lightDirection = glGetUniformLocation(m_programID, "lightDirection");
 	glUniform3fv(lightDirection, 1, &light_direction[0]);
 

@@ -17,7 +17,7 @@ void main()
     TexCoord = texCoord;
 	vPosition = vec4(position, 1);
 	vec4 newp = vec4(position, 1.0f);
-	newp.y = newp.y + (0.75f * sin(time));
+	//newp.y = newp.y + (0.75f * sin(time));
 	
     gl_Position = projectionViewWorldMatrix * newp;
 }
