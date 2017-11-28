@@ -153,6 +153,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MyApplication.cpp" />
     <ClCompile Include="Objectinator.cpp" />
+    <ClCompile Include="ParticleEmitter.cpp" />
     <ClCompile Include="Shaderinator.cpp" />
     <ClCompile Include="tiny_obj_loader.cc" />
   </ItemGroup>
@@ -166,6 +167,8 @@
     <ClInclude Include="Objectinator.h" />
     <ClInclude Include="OBJVertex.h" />
     <ClInclude Include="OpenGLInfo.h" />
+    <ClInclude Include="Particle.h" />
+    <ClInclude Include="ParticleEmitter.h" />
     <ClInclude Include="Shaderinator.h" />
     <ClInclude Include="tiny_obj_loader.h" />
     <ClInclude Include="Vertex.h" />

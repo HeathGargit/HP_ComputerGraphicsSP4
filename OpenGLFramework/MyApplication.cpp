@@ -12,6 +12,9 @@
 #include "OpenGLInfo.h"
 #include "tiny_obj_loader.h"
 #include "Objectinator.h"
+#include <glm/gtc/quaternion.hpp> 
+#include <glm/gtx/quaternion.hpp>
+#include <glm/gtx/transform.hpp>
 
 
 using namespace aie;
@@ -72,7 +75,6 @@ bool MyApplication::startup()
 
 	m_camera = new Camera(m_window, glm::inverse(view));
 	m_camera->setPerspecitve(glm::pi<float>() * 0.25f, 16.f / 9.f, 0.1f, 1000.f);
-	//m_camera->setPerspecitve(projection);
 
 	glEnable(GL_DEPTH_TEST);
 
@@ -82,6 +84,7 @@ bool MyApplication::startup()
 
 	int success = GL_FALSE;
 
+	//object program
 	Shaderinator vertexShader("./shaders/week7vertexshader.txt", GL_VERTEX_SHADER);
 	Shaderinator fragmentShader("./shaders/week7fragmentshader.txt", GL_FRAGMENT_SHADER);
 
@@ -105,10 +108,37 @@ bool MyApplication::startup()
 		delete[] infoLog;
 	}
 
-	Objectinator m_Bunny("./models/soulspear/soulspear.obj", "./models/soulspear/");
-	//Objectinator m_Bunny("./models/stanford/Bunny.obj");
-	m_Objects.push_back(m_Bunny);
-	
+	//particle program
+	Shaderinator particlevertexShader("./shaders/particle_emitter_tute_vertex.txt", GL_VERTEX_SHADER);
+	Shaderinator particlefragmentShader("./shaders/particle_emitter_tute_fragment.txt", GL_FRAGMENT_SHADER);
+
+	//create the shader "program" by attaching the tweo compiled shaders and linking them together
+	m_ParticleProgramID = glCreateProgram();
+	glAttachShader(m_ParticleProgramID, particlevertexShader.getShader());
+	glAttachShader(m_ParticleProgramID, particlefragmentShader.getShader());
+	glLinkProgram(m_ParticleProgramID);
+
+	//compile the shader program
+	glGetProgramiv(m_ParticleProgramID, GL_LINK_STATUS, &success); //try to compile the program
+	if (success == GL_FALSE) //check if program compiled successfully, if not
+	{
+		int infoLogLength = 0;
+		glGetProgramiv(m_ParticleProgramID, GL_INFO_LOG_LENGTH, &infoLogLength);
+		char* infoLog = new char[infoLogLength];
+
+		glGetProgramInfoLog(m_ParticleProgramID, infoLogLength, 0, infoLog);
+		printf("Error: Failed to link shader Program!\n");
+		printf("%s\n", infoLog);
+		delete[] infoLog;
+	}
+
+	Objectinator table("./models/wow/table/winterorc_table_02.obj", "./models/wow/table/");
+	m_Objects.push_back(table);
+
+	//particle emitter tute stuff
+	m_Emitter = new ParticleEmitter();
+	m_Emitter->initialise(1000, 500, 0.1f, 1.0f, 1, 5, 1, 1, glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+
 	//setting up deltatime
 	currentTime = (float)glfwGetTime();
 	deltaTime = 0;
@@ -132,6 +162,9 @@ bool MyApplication::update()
 	deltaTime = currentTime - previousTime;
 	m_rotation += deltaTime;
 
+	//particle emitter tute stuff
+	m_Emitter->update(deltaTime, glm::inverse(m_camera->projectView()));
+
 	//update the camera
 	m_camera->update(deltaTime);
 
@@ -148,11 +181,11 @@ void MyApplication::draw()
 
 	glEnable(GL_DEPTH_TEST); //"enables the depth buffer" - something something how far things are drawn away from camera, like a draw order.
 
-	glUseProgram(m_programID);
+	/*glUseProgram(m_programID);
 
 	//shader uniform set-ups.
 	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
-	glUniformMatrix4fv(projectionViewUniform, 1, false, glm::value_ptr(m_camera->projectView()));
+	glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
 
 	//glm::vec3 light_direction = glm::vec3(cos(m_rotation), 0, sin(m_rotation));
 	glm::vec3 light_direction = glm::vec3(0, 3, 0);
@@ -180,7 +213,19 @@ void MyApplication::draw()
 	{
 		object.draw(m_programID);
 	}
-	
+
+	glBindVertexArray(0);
+
+	//draw particles*/
+	unsigned int projectionViewUniform = glGetUniformLocation(m_ParticleProgramID, "projectionViewWorldMatrix");
+	glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
+
+	glUseProgram(m_ParticleProgramID);
+
+	m_Emitter->draw();
+
+	//Gizmos::draw(m_camera->projectView());
+
 	//unbind the drawing thingo
 	glBindVertexArray(0);
 

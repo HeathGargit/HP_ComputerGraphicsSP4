@@ -134,10 +134,29 @@ void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<t
 				//use stbi to read the image file into an unsigned int
 				unsigned char* data = stbi_load(locatinate.c_str(), &imageWidth, &imageHeight, &imageFormat, STBI_default);
 
+				//check image format
+				GLint format = 0;
+				switch (imageFormat) {
+				case STBI_grey:
+					format = GL_RED;
+					break;
+				case STBI_grey_alpha:
+					format = GL_RG;
+					break;
+				case STBI_rgb:
+					format = GL_RGB;
+					break;
+				case STBI_rgb_alpha:
+					format = GL_RGBA;
+					break;
+				default:
+					break;
+				};
+
 				//pass the loaded image to the graphics card through a handle
 				glGenTextures(1, &m_diffuse_material); //the handle
 				glBindTexture(GL_TEXTURE_2D, m_diffuse_material);
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageWidth, imageHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+				glTexImage2D(GL_TEXTURE_2D, 0, format, imageWidth, imageHeight, 0, format, GL_UNSIGNED_BYTE, data);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
