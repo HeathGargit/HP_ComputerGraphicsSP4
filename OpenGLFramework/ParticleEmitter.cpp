@@ -101,8 +101,13 @@ void ParticleEmitter::emit()
 	//resurrect the first dead pixel
 	Particle& particle = m_Particles[m_FirstDead++];
 
-	//assign it's starting position ## CHANGE THIS FOR YOUR RAIN EMITTER HEATH! ##
-	particle.position = m_Position;
+
+	//assign it's starting position
+	glm::vec3 randompos(rand() / (float)RAND_MAX * 10, 0, rand() / (float)RAND_MAX * 10);
+	glm::vec3 startpos(-5.0f, 5.0f, -5.0f);
+
+	
+	particle.position = randompos + startpos;
 
 	//randomise it's lifetime
 	particle.lifetime = 0;
@@ -112,14 +117,8 @@ void ParticleEmitter::emit()
 	particle.colour = m_StartColour;
 	particle.size = m_StartSize;
 
-	//this is where we set the direction it travels.  ## CHANGE THIS FOR YOUR RAIN EMITTER HEATH! ##
-	/*float velocity = (rand() / (float)RAND_MAX) * (m_VelocityMax - m_VelocityMin) + m_VelocityMin;
-	particle.velocity.x = (rand() / (float)RAND_MAX) * 2 - 1;
-	particle.velocity.y = (rand() / (float)RAND_MAX) * 2 - 1;
-	particle.velocity.z = (rand() / (float)RAND_MAX) * 2 - 1;
-	particle.velocity = glm::normalize(particle.velocity) * velocity;*/
-
-	particle.velocity = glm::vec3(0, -1.0f, 0);
+	//set direction
+	particle.velocity = glm::vec3(0, -6.0f, 0);
 }
 
 void ParticleEmitter::update(float deltaTime, const glm::mat4 & a_CameraTransform)
@@ -160,15 +159,15 @@ void ParticleEmitter::update(float deltaTime, const glm::mat4 & a_CameraTransfor
 			particle->colour = glm::mix(m_StartColour, m_EndColour, particle->lifetime / particle->lifespan);
 
 			//make a quad of the correct size and colour
-			float halfsize = particle->size * 0.5f;
+			float halfsize = 0.05f;
 
-			m_VertexData[quad * 4 + 0].position = glm::vec4(halfsize, halfsize * 2, 0, 1);
+			m_VertexData[quad * 4 + 0].position = glm::vec4(halfsize / 2, halfsize * 8, 0, 1);
 			m_VertexData[quad * 4 + 0].colour = particle->colour;
-			m_VertexData[quad * 4 + 1].position = glm::vec4(-halfsize, halfsize* 2, 0, 1);
+			m_VertexData[quad * 4 + 1].position = glm::vec4(-halfsize / 2, halfsize* 8, 0, 1);
 			m_VertexData[quad * 4 + 1].colour = particle->colour;
-			m_VertexData[quad * 4 + 2].position = glm::vec4(-halfsize, -halfsize * 2, 0, 1);
+			m_VertexData[quad * 4 + 2].position = glm::vec4(-halfsize / 2, -halfsize * 8, 0, 1);
 			m_VertexData[quad * 4 + 2].colour = particle->colour;
-			m_VertexData[quad * 4 + 3].position = glm::vec4(halfsize, -halfsize * 2, 0, 1);
+			m_VertexData[quad * 4 + 3].position = glm::vec4(halfsize / 2, -halfsize * 8, 0, 1);
 			m_VertexData[quad * 4 + 3].colour = particle->colour;
 
 			//create the billboard transform to always point the particle towards the camera

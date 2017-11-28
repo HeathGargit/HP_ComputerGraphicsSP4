@@ -137,7 +137,7 @@ bool MyApplication::startup()
 
 	//particle emitter tute stuff
 	m_Emitter = new ParticleEmitter();
-	m_Emitter->initialise(1000, 500, 0.1f, 1.0f, 1, 5, 1, 1, glm::vec4(1, 0, 0, 1), glm::vec4(1, 1, 0, 1));
+	m_Emitter->initialise(1000, 50, 0.1f, 1.0f, 1, 5, 1, 1, glm::vec4(1, 1, 1, 1), glm::vec4(1, 1, 1, 0));
 
 	//setting up deltatime
 	currentTime = (float)glfwGetTime();
@@ -181,7 +181,7 @@ void MyApplication::draw()
 
 	glEnable(GL_DEPTH_TEST); //"enables the depth buffer" - something something how far things are drawn away from camera, like a draw order.
 
-	/*glUseProgram(m_programID);
+	glUseProgram(m_programID);
 
 	//shader uniform set-ups.
 	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
@@ -214,17 +214,13 @@ void MyApplication::draw()
 		object.draw(m_programID);
 	}
 
-	glBindVertexArray(0);
-
-	//draw particles*/
-	unsigned int projectionViewUniform = glGetUniformLocation(m_ParticleProgramID, "projectionViewWorldMatrix");
-	glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
-
 	glUseProgram(m_ParticleProgramID);
 
-	m_Emitter->draw();
+	//draw particles
+	projectionViewUniform = glGetUniformLocation(m_ParticleProgramID, "projectionViewWorldMatrix");
+	glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
 
-	//Gizmos::draw(m_camera->projectView());
+	m_Emitter->draw();
 
 	//unbind the drawing thingo
 	glBindVertexArray(0);
