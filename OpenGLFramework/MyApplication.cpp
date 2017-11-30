@@ -35,114 +35,281 @@ MyApplication::MyApplication(const char* n)
 bool MyApplication::startup()
 {
 	//check if the glfw works
-	if (glfwInit() == false)
-	{
-		return false;
-	}
+		if (glfwInit() == false)
+		{
+			return false;
+		}
 
 	//code to do stuff in here
-	m_window = glfwCreateWindow(1600, 900, m_name, nullptr, nullptr);
+		m_window = glfwCreateWindow(1600, 900, m_name, nullptr, nullptr);
 
-	//check that the return values are working
-	if (m_window == nullptr)
-	{
-		glfwTerminate(); //shut down the graphics system
-		return false; //return an error code
-	}
+		//check that the return values are working
+		if (m_window == nullptr)
+		{
+			glfwTerminate(); //shut down the graphics system
+			return false; //return an error code
+		}
 
 	//make the window the current context
-	glfwMakeContextCurrent(m_window);
+		glfwMakeContextCurrent(m_window);
 
 	//do stuff to window
-	if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
-	{
-		glfwDestroyWindow(m_window);
-		glfwTerminate();
-		return false;
-	}
+		if (ogl_LoadFunctions() == ogl_LOAD_FAILED)
+		{
+			glfwDestroyWindow(m_window);
+			glfwTerminate();
+			return false;
+		}
 
 	//OpenGLFuncs are Now Available! Congrats!
-	auto major = ogl_GetMajorVersion();
-	auto minor = ogl_GetMinorVersion();
-	printf("GL: %i.%i\n", major, minor);
+		auto major = ogl_GetMajorVersion();
+		auto minor = ogl_GetMinorVersion();
+		printf("GL: %i.%i\n", major, minor);
 
 	//these set up the camera
-	//VIEW DEFINES WHERE THE CAMERA IS
-	mat4 view = glm::lookAt(vec3(3.0f, 1.0f, 0.1f)/*where the camera is?*/, vec3(0, 0, 0)/*what you're looking at*/, vec3(0, 1, 0)/*upwards direction*/);
-	//PROJECITON DEFINES THE ANGLE OF THE VIEW
-	mat4  projection = glm::perspective(glm::pi<float>() * 0.25f, 16.f / 9.f/*aspect ratio of the projection*/, 0.1f/*near clipping plane*/, 1000.f/*far clipping plane*/);
-	//THESE ALWAYS HAVE TO BE MULTIPLIED IN THIS ORDER!!!! (otherwise it will look weird)
+		//VIEW DEFINES WHERE THE CAMERA IS
+		mat4 view = glm::lookAt(vec3(3.0f, 1.0f, 0.1f)/*where the camera is?*/, vec3(0, 0, 0)/*what you're looking at*/, vec3(0, 1, 0)/*upwards direction*/);
+		//PROJECITON DEFINES THE ANGLE OF THE VIEW
+		mat4  projection = glm::perspective(glm::pi<float>() * 0.25f, 16.f / 9.f/*aspect ratio of the projection*/, 0.1f/*near clipping plane*/, 1000.f/*far clipping plane*/);
+		//THESE ALWAYS HAVE TO BE MULTIPLIED IN THIS ORDER!!!! (otherwise it will look weird)
 
-	m_camera = new Camera(m_window, glm::inverse(view));
-	m_camera->setPerspecitve(glm::pi<float>() * 0.25f, 16.f / 9.f, 0.1f, 1000.f);
+		m_camera = new Camera(m_window, glm::inverse(view));
+		m_camera->setPerspecitve(glm::pi<float>() * 0.25f, 16.f / 9.f, 0.1f, 1000.f);
 
-	glEnable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
 
-	glEnable(GL_LINE_SMOOTH);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_LINE_SMOOTH);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	int success = GL_FALSE;
+		int success = GL_FALSE;
 
-	//object program
-	Shaderinator vertexShader("./shaders/week7vertexshader.txt", GL_VERTEX_SHADER);
-	Shaderinator fragmentShader("./shaders/week7fragmentshader.txt", GL_FRAGMENT_SHADER);
+	//object shader program
+		Shaderinator vertexShader("./shaders/week7vertexshader.txt", GL_VERTEX_SHADER);
+		Shaderinator fragmentShader("./shaders/week7fragmentshader.txt", GL_FRAGMENT_SHADER);
 
-	//create the shader "program" by attaching the tweo compiled shaders and linking them together
-	m_programID = glCreateProgram();
-	glAttachShader(m_programID, vertexShader.getShader());
-	glAttachShader(m_programID, fragmentShader.getShader());
-	glLinkProgram(m_programID);
+		//create the shader "program" by attaching the tweo compiled shaders and linking them together
+		m_programID = glCreateProgram();
+		glAttachShader(m_programID, vertexShader.getShader());
+		glAttachShader(m_programID, fragmentShader.getShader());
+		glLinkProgram(m_programID);
 
-	//compile the program(?)
-	glGetProgramiv(m_programID, GL_LINK_STATUS, &success); //try to compile the program
-	if (success == GL_FALSE) //check if program compiled successfully, if not
-	{
-		int infoLogLength = 0;
-		glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &infoLogLength);
-		char* infoLog = new char[infoLogLength];
+		//compile the program(?)
+		glGetProgramiv(m_programID, GL_LINK_STATUS, &success); //try to compile the program
+		if (success == GL_FALSE) //check if program compiled successfully, if not
+		{
+			int infoLogLength = 0;
+			glGetProgramiv(m_programID, GL_INFO_LOG_LENGTH, &infoLogLength);
+			char* infoLog = new char[infoLogLength];
 
-		glGetProgramInfoLog(m_programID, infoLogLength, 0, infoLog);
-		printf("Error: Failed to link shader Program!\n");
-		printf("%s\n", infoLog);
-		delete[] infoLog;
-	}
+			glGetProgramInfoLog(m_programID, infoLogLength, 0, infoLog);
+			printf("Error: Failed to link shader Program!\n");
+			printf("%s\n", infoLog);
+			delete[] infoLog;
+		}
 
-	//particle program
-	Shaderinator particlevertexShader("./shaders/particle_emitter_tute_vertex.txt", GL_VERTEX_SHADER);
-	Shaderinator particlefragmentShader("./shaders/particle_emitter_tute_fragment.txt", GL_FRAGMENT_SHADER);
+	//particle shader program
+		Shaderinator particlevertexShader("./shaders/particle_emitter_tute_vertex.txt", GL_VERTEX_SHADER);
+		Shaderinator particlefragmentShader("./shaders/particle_emitter_tute_fragment.txt", GL_FRAGMENT_SHADER);
 
-	//create the shader "program" by attaching the tweo compiled shaders and linking them together
-	m_ParticleProgramID = glCreateProgram();
-	glAttachShader(m_ParticleProgramID, particlevertexShader.getShader());
-	glAttachShader(m_ParticleProgramID, particlefragmentShader.getShader());
-	glLinkProgram(m_ParticleProgramID);
+		//create the shader "program" by attaching the tweo compiled shaders and linking them together
+		m_ParticleProgramID = glCreateProgram();
+		glAttachShader(m_ParticleProgramID, particlevertexShader.getShader());
+		glAttachShader(m_ParticleProgramID, particlefragmentShader.getShader());
+		glLinkProgram(m_ParticleProgramID);
 
-	//compile the shader program
-	glGetProgramiv(m_ParticleProgramID, GL_LINK_STATUS, &success); //try to compile the program
-	if (success == GL_FALSE) //check if program compiled successfully, if not
-	{
-		int infoLogLength = 0;
-		glGetProgramiv(m_ParticleProgramID, GL_INFO_LOG_LENGTH, &infoLogLength);
-		char* infoLog = new char[infoLogLength];
+		//compile the shader program
+		glGetProgramiv(m_ParticleProgramID, GL_LINK_STATUS, &success); //try to compile the program
+		if (success == GL_FALSE) //check if program compiled successfully, if not
+		{
+			int infoLogLength = 0;
+			glGetProgramiv(m_ParticleProgramID, GL_INFO_LOG_LENGTH, &infoLogLength);
+			char* infoLog = new char[infoLogLength];
 
-		glGetProgramInfoLog(m_ParticleProgramID, infoLogLength, 0, infoLog);
-		printf("Error: Failed to link shader Program!\n");
-		printf("%s\n", infoLog);
-		delete[] infoLog;
-	}
+			glGetProgramInfoLog(m_ParticleProgramID, infoLogLength, 0, infoLog);
+			printf("Error: Failed to link shader Program!\n");
+			printf("%s\n", infoLog);
+			delete[] infoLog;
+		}
 
-	Objectinator table("./models/wow/table/winterorc_table_02.obj", "./models/wow/table/");
-	m_Objects.push_back(table);
+	/*//set up frame buffer objects
+		glGenFramebuffers(1, &m_FBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+
+		//create a texture and bind it
+		glGenTextures(1, &m_FBOTexture);
+		glBindTexture(GL_TEXTURE_2D, m_FBOTexture);
+
+		//specify the texture format for storage
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, 512, 512);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		//attach it to the framebuffer as the first colour attachment
+		//the FBO must still be bound
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_FBOTexture, 0);
+
+		//while the FBO is still bound
+		GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+		glDrawBuffers(1, drawBuffers);
+
+		//set up and bind a 24bit dpeth buffer as a render buffer
+		glGenRenderbuffers(1, &m_FBODepth);
+		glBindRenderbuffer(GL_RENDERBUFFER, m_FBODepth);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+
+		//whole the FBO is still bound
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_FBODepth);
+
+		//check the framebuffer status
+		GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+		if (status != GL_FRAMEBUFFER_COMPLETE)
+		{
+			printf("Framebuffer Error!!!\n");
+		}
+
+		//unbind the frame buffer
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+	//one-off stuff for the tutorial, so weaksauce
+		float vertexData[] = {
+			-5, 0, -5, 1, 0, 0,
+			5, 0, -5, 1, 1, 0,
+			5, 10, -5, 1, 1, 1,
+			-5, 10, -5, 1, 0, 1,
+		};
+		unsigned int indexData[] = {
+			0, 1, 2,
+			0, 2, 3,
+		};
+		glGenVertexArrays(1, &m_VAO);
+		glBindVertexArray(m_VAO);
+			glGenBuffers(1, &m_VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 4,
+				vertexData, GL_STATIC_DRAW);
+			glGenBuffers(1, &m_IBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 6,
+				indexData, GL_STATIC_DRAW);
+			glEnableVertexAttribArray(0);
+			glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,
+				sizeof(float) * 6, 0);
+			glEnableVertexAttribArray(1);
+			glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+				sizeof(float) * 6, ((char*)0) + 16);
+			glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		Shaderinator FBlevertexShader("./shaders/frame_buffer_tute_vertex.txt", GL_VERTEX_SHADER);
+		Shaderinator FBfragmentShader("./shaders/frame_buffer_tute_fragment.txt", GL_FRAGMENT_SHADER);
+
+		//create the shader "program" by attaching the tweo compiled shaders and linking them together
+		m_FrameBufferProgramID = glCreateProgram();
+		glAttachShader(m_FrameBufferProgramID, particlevertexShader.getShader());
+		glAttachShader(m_FrameBufferProgramID, particlefragmentShader.getShader());
+		glLinkProgram(m_FrameBufferProgramID);
+
+		//compile the shader program
+		glGetProgramiv(m_FrameBufferProgramID, GL_LINK_STATUS, &success); //try to compile the program
+		if (success == GL_FALSE) //check if program compiled successfully, if not
+		{
+			int infoLogLength = 0;
+			glGetProgramiv(m_FrameBufferProgramID, GL_INFO_LOG_LENGTH, &infoLogLength);
+			char* infoLog = new char[infoLogLength];
+
+			glGetProgramInfoLog(m_FrameBufferProgramID, infoLogLength, 0, infoLog);
+			printf("Error: Failed to link shader Program!\n");
+			printf("%s\n", infoLog);
+			delete[] infoLog;
+		}*/
+
+	//post processing tute
+	// setup framebuffer
+		glGenFramebuffers(1, &m_FBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+			glGenTextures(1, &m_FBOTexture);
+			glBindTexture(GL_TEXTURE_2D, m_FBOTexture);
+			glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, 1600, 900);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+				GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+				GL_NEAREST);
+			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+				m_FBOTexture, 0);
+			glGenRenderbuffers(1, &m_FBODepth);
+			glBindRenderbuffer(GL_RENDERBUFFER, m_FBODepth);
+			glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24,
+				1600, 900);
+			glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+				GL_RENDERBUFFER, m_FBODepth);
+			GLenum drawBuffers[] = { GL_COLOR_ATTACHMENT0 };
+			glDrawBuffers(1, drawBuffers);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+		// fullscreen quad
+		glm::vec2 halfTexel = 1.0f / glm::vec2(1600, 900) * 0.5f;
+		float vertexData[] = {
+			-1, -1, 0, 1, halfTexel.x, halfTexel.y,
+			1, 1, 0, 1, 1 - halfTexel.x, 1 - halfTexel.y,
+			-1, 1, 0, 1, halfTexel.x, 1 - halfTexel.y,
+			-1, -1, 0, 1, halfTexel.x, halfTexel.y,
+			1, -1, 0, 1, 1 - halfTexel.x, halfTexel.y,
+			1, 1, 0, 1, 1 - halfTexel.x, 1 - halfTexel.y,
+		};
+		glGenVertexArrays(1, &m_VAO);
+		glBindVertexArray(m_VAO);
+		glGenBuffers(1, &m_VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * 6 * 6,
+			vertexData, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE,
+			sizeof(float) * 6, 0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+			sizeof(float) * 6, ((char*)0) + 16);
+		glBindVertexArray(0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		//shader prog
+		Shaderinator FBlevertexShader("./shaders/post_processing_tute_vertex.txt", GL_VERTEX_SHADER);
+		Shaderinator FBfragmentShader("./shaders/post_processing_tute_fragment.txt", GL_FRAGMENT_SHADER);
+
+		//create the shader "program" by attaching the tweo compiled shaders and linking them together
+		m_FrameBufferProgramID = glCreateProgram();
+		glAttachShader(m_FrameBufferProgramID, particlevertexShader.getShader());
+		glAttachShader(m_FrameBufferProgramID, particlefragmentShader.getShader());
+		glLinkProgram(m_FrameBufferProgramID);
+
+		//compile the shader program
+		glGetProgramiv(m_FrameBufferProgramID, GL_LINK_STATUS, &success); //try to compile the program
+		if (success == GL_FALSE) //check if program compiled successfully, if not
+		{
+			int infoLogLength = 0;
+			glGetProgramiv(m_FrameBufferProgramID, GL_INFO_LOG_LENGTH, &infoLogLength);
+			char* infoLog = new char[infoLogLength];
+
+			glGetProgramInfoLog(m_FrameBufferProgramID, infoLogLength, 0, infoLog);
+			printf("Error: Failed to link shader Program!\n");
+			printf("%s\n", infoLog);
+			delete[] infoLog;
+		}
+
+	//load objects
+		Objectinator table("./models/wow/scourge/sc_crystal_base.obj", "./models/wow/scourge/");
+		m_Objects.push_back(table);
 
 	//particle emitter tute stuff
-	m_Emitter = new ParticleEmitter();
-	m_Emitter->initialise(1000, 50, 0.1f, 1.0f, 1, 5, 1, 1, glm::vec4(1, 1, 1, 1), glm::vec4(1, 1, 1, 0));
+		m_Emitter = new ParticleEmitter();
+		m_Emitter->initialise(1000, 50, 0.1f, 1.0f, 1, 5, 1, 1, glm::vec4(1, 1, 1, 1), glm::vec4(1, 1, 1, 0));
 
 	//setting up deltatime
-	currentTime = (float)glfwGetTime();
-	deltaTime = 0;
-	m_rotation = 0;
+		currentTime = (float)glfwGetTime();
+		deltaTime = 0;
+		m_rotation = 0;
 
 	return true;
 }
@@ -176,51 +343,84 @@ bool MyApplication::update()
 
 void MyApplication::draw()
 {
-	glClearColor(0.4f, 0.4f, 0.4f, 1.0f); //background colour
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //this cleares the screen and draws the background colour?
+	//framebufferry tute stuff
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	glViewport(0, 0, 1600, 900);
 
-	glEnable(GL_DEPTH_TEST); //"enables the depth buffer" - something something how far things are drawn away from camera, like a draw order.
+		
 
-	glUseProgram(m_programID);
+		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); //background colour
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //this cleares the screen and draws the background colour?
 
-	//shader uniform set-ups.
-	unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
-	glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
+		glEnable(GL_DEPTH_TEST); //"enables the depth buffer" - something something how far things are drawn away from camera, like a draw order.
 
-	//glm::vec3 light_direction = glm::vec3(cos(m_rotation), 0, sin(m_rotation));
-	glm::vec3 light_direction = glm::vec3(0, 3, 0);
-	unsigned int lightDirection = glGetUniformLocation(m_programID, "lightDirection");
-	glUniform3fv(lightDirection, 1, &light_direction[0]);
+		glUseProgram(m_programID);
 
-	glm::vec3 light_colour = glm::vec3(0.5, 1, 1);
-	unsigned int lightColour = glGetUniformLocation(m_programID, "lightColour");
-	glUniform3fv(lightColour, 1, &light_colour[0]);
+		//shader uniform set-ups.
+		unsigned int projectionViewUniform = glGetUniformLocation(m_programID, "projectionViewWorldMatrix");
+		glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
 
-	glm::vec3 camera_position = m_camera->getPosition();
-	unsigned int CameraPos = glGetUniformLocation(m_programID, "CameraPos");
-	glUniform3fv(CameraPos, 1, &camera_position[0]);
+		//glm::vec3 light_direction = glm::vec3(cos(m_rotation), 0, sin(m_rotation));
+		glm::vec3 light_direction = glm::vec3(0, 3, 0);
+		unsigned int lightDirection = glGetUniformLocation(m_programID, "lightDirection");
+		glUniform3fv(lightDirection, 1, &light_direction[0]);
 
-	float specular_power = 1.0f;
-	unsigned int SpecPow = glGetUniformLocation(m_programID, "SpecPow");
-	glUniform1f(SpecPow, specular_power);
+		glm::vec3 light_colour = glm::vec3(0.55f, 0.55f, 0.55f);
+		unsigned int lightColour = glGetUniformLocation(m_programID, "lightColour");
+		glUniform3fv(lightColour, 1, &light_colour[0]);
 
-	unsigned int time = glGetUniformLocation(m_programID, "time");
-	glUniform1f(time, m_rotation);
+		glm::vec3 camera_position = m_camera->getPosition();
+		unsigned int CameraPos = glGetUniformLocation(m_programID, "CameraPos");
+		glUniform3fv(CameraPos, 1, &camera_position[0]);
+
+		float specular_power = 5.0f;
+		unsigned int SpecPow = glGetUniformLocation(m_programID, "SpecPow");
+		glUniform1f(SpecPow, specular_power);
+
+		unsigned int time = glGetUniformLocation(m_programID, "time");
+		glUniform1f(time, m_rotation);
 
 
-	//draw all your objects.
-	for (auto object : m_Objects)
-	{
-		object.draw(m_programID);
-	}
+		//draw all your objects.
+		for (auto object : m_Objects)
+		{
+			object.draw(m_programID);
+		}
 
-	glUseProgram(m_ParticleProgramID);
+		glUseProgram(m_ParticleProgramID);
 
-	//draw particles
-	projectionViewUniform = glGetUniformLocation(m_ParticleProgramID, "projectionViewWorldMatrix");
-	glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
+		//draw particles
+		projectionViewUniform = glGetUniformLocation(m_ParticleProgramID, "projectionViewWorldMatrix");
+		glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
 
-	m_Emitter->draw();
+		m_Emitter->draw();
+
+	/*//frame buffery bit? from tute
+		glUseProgram(m_FrameBufferProgramID);
+		int loc = glGetUniformLocation(m_FrameBufferProgramID, "projectionView");
+		glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_FBOTexture);
+		glUniform1i(glGetUniformLocation(m_FrameBufferProgramID, "diffuse"), 0);
+		glBindVertexArray(m_VAO);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);*/
+
+	//unbind the frame buffer
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, 1600, 900);
+
+
+	//glClearColor(0.85f, 0.85f, 0.85f, 1);
+	//glClear(/*GL_COLOR_BUFFER_BIT |*/ GL_DEPTH_BUFFER_BIT);
+
+	// draw our full-screen quad
+		glUseProgram(m_FrameBufferProgramID);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, m_FBOTexture);
+		int loc = glGetUniformLocation(m_FrameBufferProgramID, "target");
+		glUniform1i(loc, 0);
+		glBindVertexArray(m_VAO);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
 
 	//unbind the drawing thingo
 	glBindVertexArray(0);

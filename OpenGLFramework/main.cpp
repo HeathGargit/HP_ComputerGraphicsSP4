@@ -3,7 +3,7 @@
 
 int main()
 {
-	MyApplication* myApp = new MyApplication("Week 7");
+	MyApplication* myApp = new MyApplication("Undead Scene");
 	if (myApp->startup())
 	{
 		while (myApp->update())

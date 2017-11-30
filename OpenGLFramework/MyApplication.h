@@ -30,12 +30,19 @@ private:
 	glm::vec3					m_positions[2];
 	glm::quat					m_rotations[2];
 
+	//vertex buffer object stuff
 	unsigned int				m_VAO;
 	unsigned int				m_VBO;
 	unsigned int				m_IBO;
 
+	//frame buffer stuff
+	unsigned int				m_FBO;
+	unsigned int				m_FBOTexture;
+	unsigned int				m_FBODepth;
+
 	unsigned int				m_programID;
 	unsigned int				m_ParticleProgramID;
+	unsigned int				m_FrameBufferProgramID;
 
 	GLFWwindow*					m_window;
 	const char*					m_name;
