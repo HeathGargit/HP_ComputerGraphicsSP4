@@ -20,6 +20,9 @@ public:
 	void update(float deltaTime, const glm::mat4& a_CameraTransform); //updates each particle and manages life/death of particles
 	void draw(); //draws the particles!
 
+	int m_EmitRateAccessor;
+	glm::vec3 m_direction;
+
 protected:
 	Particle*			m_Particles; //array of particle information
 	unsigned int		m_FirstDead; //location of the first dead particle to loop up to
@@ -44,6 +47,8 @@ protected:
 
 	glm::vec4			m_StartColour; //colour of particle
 	glm::vec4			m_EndColour;
+
+	void setEmitRate(int newValue);
 };
 
 #endif

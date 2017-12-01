@@ -1,0 +1,30 @@
+#version 410
+
+in vec2 fTexCoord;
+
+out vec4 fragColour;
+
+uniform sampler2D target;
+uniform bool useGreyscale;
+
+vec4 Grey() {
+	vec4 a = texture(target, fTexCoord);
+	float m1 = max(a.r, a.g);
+	float Maxi = max(m1, a.b);
+	float m2 = min(a.r, a.g);
+	float Mini = min(m2, a.b);
+	float greyscale = (Maxi + Mini) / 2;
+	return vec4(greyscale, greyscale, greyscale, 1);
+}
+
+vec4 Simple() {
+	return texture(target, fTexCoord);
+}
+
+void main() {
+	if(useGreyscale) {
+		fragColour = Grey();
+		return;
+	}
+	fragColour = Simple();
+}

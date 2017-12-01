@@ -9,6 +9,7 @@ out vec4 vPosition;
 
 uniform mat4 projectionViewWorldMatrix;
 uniform float time;
+uniform vec3 WorldPos;
 
 
 void main() 
@@ -17,7 +18,7 @@ void main()
     TexCoord = texCoord;
 	vPosition = vec4(position, 1);
 	vec4 newp = vec4(position, 1.0f);
-	//newp.y = newp.y + (0.75f * sin(time));
+	newp = newp + vec4(WorldPos, 0);
 	
     gl_Position = projectionViewWorldMatrix * newp;
 }

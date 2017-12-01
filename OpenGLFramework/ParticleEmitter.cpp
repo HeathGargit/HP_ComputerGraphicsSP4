@@ -28,7 +28,7 @@ void ParticleEmitter::initialise(unsigned int a_MaxParticles, unsigned int a_Emi
 {
 	//set up emit timers
 	m_EmitTimer = 0;
-	m_EmitRate = 1.0f / a_EmitRate;
+	setEmitRate(a_EmitRate);
 
 	//set up all variables
 	m_StartColour = a_StartColour;
@@ -40,6 +40,10 @@ void ParticleEmitter::initialise(unsigned int a_MaxParticles, unsigned int a_Emi
 	m_LifespanMin = a_LifeTimeMin;
 	m_LifespanMax = a_LifeTimeMax;
 	m_MaxParticles = a_MaxParticles;
+
+	//set up imgui accessor
+	m_EmitRateAccessor = a_EmitRate;
+	m_direction = glm::vec3(0, -6.0f, 0);
 
 	//create particle array
 	m_Particles = new Particle[m_MaxParticles];
@@ -103,8 +107,8 @@ void ParticleEmitter::emit()
 
 
 	//assign it's starting position
-	glm::vec3 randompos(rand() / (float)RAND_MAX * 10, 0, rand() / (float)RAND_MAX * 10);
-	glm::vec3 startpos(-5.0f, 5.0f, -5.0f);
+	glm::vec3 randompos(rand() / (float)RAND_MAX * 30, 0, rand() / (float)RAND_MAX * 30);
+	glm::vec3 startpos(-15.0f, 15.0f, -15.0f);
 
 	
 	particle.position = randompos + startpos;
@@ -118,7 +122,7 @@ void ParticleEmitter::emit()
 	particle.size = m_StartSize;
 
 	//set direction
-	particle.velocity = glm::vec3(0, -6.0f, 0);
+	particle.velocity = m_direction;
 }
 
 void ParticleEmitter::update(float deltaTime, const glm::mat4 & a_CameraTransform)
@@ -135,6 +139,8 @@ void ParticleEmitter::update(float deltaTime, const glm::mat4 & a_CameraTransfor
 	}
 
 	unsigned int quad = 0;
+
+	setEmitRate(m_EmitRateAccessor);
 
 	//update particles and turn live particles into billboard quads
 	for (unsigned int i = 0; i < m_FirstDead; i++)
@@ -196,3 +202,9 @@ void ParticleEmitter::draw()
 	glBindVertexArray(m_VAO);
 	glDrawElements(GL_TRIANGLES, m_FirstDead * 6, GL_UNSIGNED_INT, 0);
 }
+
+void ParticleEmitter::setEmitRate(int newValue)
+{
+	m_EmitRate = 1.0f / newValue;
+}
+

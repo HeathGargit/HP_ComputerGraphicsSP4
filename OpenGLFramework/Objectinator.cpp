@@ -25,6 +25,8 @@ Objectinator::Objectinator(char * inputString)
 	{
 		throw std::exception("Couldn't load file!");
 	}
+
+	m_WorldPosition = glm::vec3(0, 0, 0);
 }
 
 Objectinator::Objectinator(char * fileInputString, char * materialLocationInputString)
@@ -46,6 +48,8 @@ Objectinator::Objectinator(char * fileInputString, char * materialLocationInputS
 		printf(err.c_str());
 		throw std::exception("Couldn't Load File and/or material!");
 	}
+
+	m_WorldPosition = glm::vec3(0, 0, 0);
 }
 
 
@@ -64,12 +68,20 @@ void Objectinator::draw(const unsigned int programID)
 	unsigned int loc = (glGetUniformLocation(programID, "diffuse"));
 	glUniform1i(loc, 0);
 
+	unsigned int worldPos = glGetUniformLocation(programID, "WorldPos");
+	glUniform3fv(worldPos, 1, &m_WorldPosition[0]);
+
 	//draw all triangles in the object
 	for (auto& gl : m_glInfo)
 	{
 		glBindVertexArray(gl.m_VAO);
 		glDrawArrays(GL_TRIANGLES, 0, gl.m_faceCount * 3);
 	}
+}
+
+void Objectinator::setWorldPos(glm::vec3 newPos)
+{
+	m_WorldPosition = newPos;
 }
 
 void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<tinyobj::shape_t>& shapes, std::vector<tinyobj::material_t>& materials, const char* mat_loc)

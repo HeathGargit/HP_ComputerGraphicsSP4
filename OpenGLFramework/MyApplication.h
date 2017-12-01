@@ -21,14 +21,9 @@ public:
 	void shutdown()	override;
 
 private:
-	void createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<tinyobj::shape_t>& shapes);
-
-	std::vector<OpenGLInfo>		m_glInfo; //was abstracted into Objectinator - remove before final submission
+	//stuff for holding objects,emitters
 	std::vector<Objectinator>	m_Objects;
 	ParticleEmitter*			m_Emitter;
-
-	glm::vec3					m_positions[2];
-	glm::quat					m_rotations[2];
 
 	//vertex buffer object stuff
 	unsigned int				m_VAO;
@@ -40,21 +35,21 @@ private:
 	unsigned int				m_FBOTexture;
 	unsigned int				m_FBODepth;
 
+	//shader program ids
 	unsigned int				m_programID;
 	unsigned int				m_ParticleProgramID;
 	unsigned int				m_FrameBufferProgramID;
+	bool						useGreyscale;
 
-	GLFWwindow*					m_window;
-	const char*					m_name;
-	float						m_time;
-	float						m_time_scale;
-	glm::mat4					m_view;
-	glm::mat4					m_projection;
-	float						currentTime;
-	float						deltaTime;
-	float						m_rotation;
+	GLFWwindow*					m_window; //gl window context thinger
+	const char*					m_name; //name of the window
+	glm::mat4					m_view; //camera variable
+	glm::mat4					m_projection; //camera variable
+	float						currentTime; //deltatime floats
+	float						deltaTime; //deltatime
+	float						m_TimePassed; //deltatime
 
-	Camera*						m_camera;
+	Camera*						m_camera; //the actual camera from the camera class
 };
 
 #endif
