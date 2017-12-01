@@ -149,7 +149,6 @@
     <ClCompile Include="..\dep\imgui\imgui_draw.cpp" />
     <ClCompile Include="..\src\Gizmos.cpp" />
     <ClCompile Include="..\src\gl_core_4_4.c" />
-    <ClCompile Include="Application.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="IApplication.cpp" />
     <ClCompile Include="imgui_impl_glfw_gl3.cpp" />
@@ -164,7 +163,6 @@
     <ClInclude Include="..\dep\imgui\imgui.h" />
     <ClInclude Include="..\src\Gizmos.h" />
     <ClInclude Include="..\src\gl_core_4_4.h" />
-    <ClInclude Include="Application.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="IApplication.h" />
     <ClInclude Include="imgui_impl_glfw_gl3.h" />

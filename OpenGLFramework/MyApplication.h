@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: MyApplication.h
+Purpose: The main "Program" part of the application. A lot of stuff could have been abstracted away into classes.
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #ifndef MYAPPLICATION
 #define MYAPPLICATION
 

@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: Particle.h
+Purpose: A particle class to be used with the particle emitter class. Pretty much just stores information about each particle
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #pragma once
 
 #include <glm/vec3.hpp>

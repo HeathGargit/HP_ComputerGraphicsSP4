@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: Shaderinator.h
+Purpose: class that sets up shaders to be added to Programs.
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #ifndef SHADERINATOR
 #define SHADERINATOR
 

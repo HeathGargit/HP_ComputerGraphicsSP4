@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: Shaderinator.cpp
+Purpose: class that sets up shaders to be added to Programs.
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #include "Shaderinator.h"
 #include <fstream>
 #include <string>
@@ -6,13 +15,10 @@
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 
-
-
 Shaderinator::Shaderinator(char* inputString, unsigned int shaderType)
 {
 	LoadShader(inputString, shaderType);
 }
-
 
 Shaderinator::~Shaderinator()
 {
@@ -45,7 +51,7 @@ bool Shaderinator::LoadShader(char* inputString, unsigned int shaderType)
 		glShaderSource(m_Shader, 1, &m_RawShader, 0);
 		glCompileShader(m_Shader);
 	}
-	else
+	else //it's not a file, it's a raw text shader
 	{
 		m_RawShader = inputString;
 

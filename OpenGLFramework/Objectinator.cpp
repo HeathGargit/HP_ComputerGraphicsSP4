@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: Objectinator.h
+Purpose: class that stores objects to be drawn on the screen. similar to a gameobject class.
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #include "Objectinator.h"
 #include "tiny_obj_loader.h"
 #include "OBJVertex.h"
@@ -52,8 +61,6 @@ Objectinator::Objectinator(char * fileInputString, char * materialLocationInputS
 	m_WorldPosition = glm::vec3(0, 0, 0);
 }
 
-
-
 Objectinator::~Objectinator()
 {
 }
@@ -64,10 +71,9 @@ void Objectinator::draw(const unsigned int programID)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_diffuse_material);
 
-	//tell the shader where it is
+	//uniforms to send to the shaders
 	unsigned int loc = (glGetUniformLocation(programID, "diffuse"));
 	glUniform1i(loc, 0);
-
 	unsigned int worldPos = glGetUniformLocation(programID, "WorldPos");
 	glUniform3fv(worldPos, 1, &m_WorldPosition[0]);
 

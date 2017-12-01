@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: ParticleEmitter.cpp
+Purpose: A particle emitter class
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #include "ParticleEmitter.h"
 #include <gl_core_4_4.h>
 #include <glm/geometric.hpp>
@@ -147,6 +156,7 @@ void ParticleEmitter::update(float deltaTime, const glm::mat4 & a_CameraTransfor
 	{
 		Particle* particle = &m_Particles[i];
 
+		//increase the time spent alive
 		particle->lifetime += deltaTime;
 		if (particle->lifetime >= particle->lifespan) //if it's past it's life time, end it
 		{

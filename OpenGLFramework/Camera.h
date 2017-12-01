@@ -1,6 +1,14 @@
+/*---------------------------------------------------------
+File Name: Camera.h
+Purpose: Camera class for zooming aorund our world!
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #ifndef CAMERA
 #define CAMERA
-
 
 #include <glm/mat4x4.hpp>
 #include <GLFW\glfw3.h>
@@ -8,16 +16,17 @@
 class Camera
 {
 protected:
+	//member variables, pretty self explainitory
 	glm::mat4 m_worldTransform;
 	glm::mat4 m_viewTransform;
 	glm::mat4 m_projectionTransform;
 	glm::mat4 m_projectionViewTransform;
 	GLFWwindow* m_window;
-	float m_speed;
+	float m_speed; //movement speed of the camera
 	bool m_dirty; //to tell if something needs to be updated.
 
+	//mouselook input variables
 	double m_last_x, m_last_y;
-
 	double m_heading, m_pitch;
 
 public:

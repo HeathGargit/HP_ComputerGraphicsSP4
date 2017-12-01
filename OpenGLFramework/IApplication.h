@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: iApplication.h
+Purpose: Abstract class for creating applications in the framework
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #ifndef APPLICATION_HEADER
 #define APPLICATION_HEADER
 

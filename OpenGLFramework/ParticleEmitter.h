@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: ParticleEmitter.h
+Purpose: A particle emitter class
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #ifndef PARTICLEEMITTER
 #define PARTICLEEMITTER
 
@@ -5,8 +14,6 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/mat4x4.hpp>
-
-
 
 class ParticleEmitter
 {
@@ -20,6 +27,7 @@ public:
 	void update(float deltaTime, const glm::mat4& a_CameraTransform); //updates each particle and manages life/death of particles
 	void draw(); //draws the particles!
 
+	//mainly accessors for the imGUI to get access to the class.
 	int m_EmitRateAccessor;
 	glm::vec3 m_direction;
 
@@ -48,7 +56,7 @@ protected:
 	glm::vec4			m_StartColour; //colour of particle
 	glm::vec4			m_EndColour;
 
-	void setEmitRate(int newValue);
+	void setEmitRate(int newValue); //pretty obvious
 };
 
 #endif

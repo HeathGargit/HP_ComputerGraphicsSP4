@@ -1,3 +1,12 @@
+/*---------------------------------------------------------
+File Name: Camera.cpp
+Purpose: Camera class for zooming aorund our world!
+Author: Heath Parkes (gargit@gargit.net)
+Modified: 1/12/2017
+-----------------------------------------------------------
+Copyright 2017 AIE/HP
+---------------------------------------------------------*/
+
 #include "Camera.h"
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
@@ -79,40 +88,7 @@ void Camera::update(float deltatime)
 	//Remember this is a world transform, our setView() must store the inverse of the input parameter in it's m_view matrix.
 	this->setView(roty * rotz);
 
-
-	/*//get the mouse position
-	double x = 0, y = 0;
-	glfwGetCursorPos(m_window, &x, &y);
-
-	//sets to initial position first frame so there's no "kick" from the reading of the first position
-	if (m_last_x == -1) 
-	{
-		m_last_x = x;
-		m_last_y = y;
-	}
-
-	//get change
-	const double dx = x - m_last_x;
-	const double dy = y - m_last_y;
-
-	//store current position for next frame calculation
-	m_last_x = x;
-	m_last_y = y;
-
-	//change from original position
-	m_heading -= dx * 0.002f;
-	m_pitch -= dy * 0.002;
-
-	//make sure you cant look up or down too far by clamping between half pi (radians?)
-	m_pitch = glm::clamp(m_pitch, -glm::half_pi<double>(), glm::half_pi<double>()); 
-	
-	//calculate rotation
-	auto roty = glm::rotate((float)m_heading, glm::vec3(0, 1, 0));
-	auto rotz = glm::rotate((float)m_pitch, getRight());
-
-	//apply rotation
-	this->setView(roty * rotz);*/
-
+	//when there's a change we need to update the Projection View transform
 	if (m_dirty)
 	{
 		m_projectionViewTransform = m_projectionTransform * m_viewTransform;
@@ -132,8 +108,7 @@ Camera::Camera(GLFWwindow* window, const glm::mat4& world)
 	m_dirty = true;
 	m_last_x = -1;
 	m_last_y = -1;
-	/*m_heading = glm::pi<double>();
-	m_pitch = 0;*/
+	m_pitch = 0;
 
 	//Use the 3rd vector of the 'world' matrix, which is the 'forward' direction vector, to determine heading and pitch through trigonometry.
 	vec3 w(world[2]);
