@@ -147,7 +147,7 @@ void Objectinator::createOpenGLBuffers(tinyobj::attrib_t& attribs, std::vector<t
 				int imageWidth = 0, imageHeight = 0, imageFormat = 0;
 
 				std::string locatinate = mat_loc + materials[0].diffuse_texname;
-				printf(locatinate.c_str());
+				printf("Loading material: %s \n",locatinate.c_str());
 
 				//use stbi to read the image file into an unsigned int
 				unsigned char* data = stbi_load(locatinate.c_str(), &imageWidth, &imageHeight, &imageFormat, STBI_default);

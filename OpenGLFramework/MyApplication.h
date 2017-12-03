@@ -58,6 +58,11 @@ private:
 	float						deltaTime; //deltatime
 	float						m_TimePassed; //deltatime
 
+	//lightning stuff
+	bool						m_IsLightning;
+	float						m_glCearColour;
+	float						m_LightningTime;
+
 	Camera*						m_camera; //the actual camera from the camera class
 };
 

@@ -10,6 +10,7 @@ uniform vec3 lightColour;
 uniform sampler2D diffuse;
 uniform vec3 CameraPos;
 uniform float SpecPow;
+uniform vec3 lightning;
 
 void main() 
 { 
@@ -19,5 +20,5 @@ void main()
 	float s = max(0, dot(E, R));
 	s = pow(s, SpecPow);
 	vec4 base_colour = texture(diffuse, TexCoord);
-	fragColor = vec4(lightColour * base_colour.xyz + lightColour * base_colour.xyz, 1);
+	fragColor = vec4(lightColour * base_colour.xyz * d + lightColour * base_colour.xyz * s + lightning, 1);
 }

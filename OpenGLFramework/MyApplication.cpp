@@ -1,12 +1,3 @@
-/*---------------------------------------------------------
-File Name: MyApplication.cpp
-Purpose: The main "Program" part of the application. A lot of stuff could have been abstracted away into classes.
-Author: Heath Parkes (gargit@gargit.net)
-Modified: 1/12/2017
------------------------------------------------------------
-Copyright 2017 AIE/HP
----------------------------------------------------------*/
-
 #include <gl_core_4_4.h>
 #include "MyApplication.h"
 #include <GLFW\glfw3.h>
@@ -27,11 +18,13 @@ Copyright 2017 AIE/HP
 #include <imgui.h>
 #include "imgui_impl_glfw_gl3.h"
 
+//forward declarations
 using namespace aie;
 using glm::vec3;
 using glm::vec4;
 using glm::mat4;
 
+//constructor
 MyApplication::MyApplication(const char* n)
 {
 	m_name = n;
@@ -221,22 +214,85 @@ bool MyApplication::startup()
 			return false;
 		}
 
-	//load objects
-		Objectinator dias("./models/wow/scourge/sc_crystal_base.obj", "./models/wow/scourge/");
-		m_Objects.push_back(dias);
+	//load objects - this should be in some sort of function.
+		try
+		{
+			Objectinator dias("./models/wow/scourge/sc_crystal_base.obj", "./models/wow/scourge/");
+			m_Objects.push_back(dias);
+		}
+		catch (std::exception& e)
+		{
+			//Object load failed...
+			printf("Error Loading Object: %s", e.what());
+			return false;
+		}
+		
+		try
+		{
+			Objectinator crystal("./models/wow/magefocusingcrystal/mage_focusingcrystal_creature.obj", "./models/wow/magefocusingcrystal/");
+			crystal.setWorldPos(glm::vec3(0, 2.5f, 0));
+			m_Objects.push_back(crystal);
+		}
+		catch (std::exception& e)
+		{
+			//Object load failed...
+			printf("Error Loading Object: %s", e.what());
+			return false;
+		}
 
-		Objectinator crystal("./models/wow/magefocusingcrystal/mage_focusingcrystal_creature.obj", "./models/wow/magefocusingcrystal/");
-		crystal.setWorldPos(glm::vec3(0, 2.5f, 0));
-		m_Objects.push_back(crystal);
+		try
+		{
+			Objectinator ground("./models/wow/floatingrocks/netherstorm_overhangrock_large_01.obj", "./models/wow/floatingrocks/");
+			ground.setWorldPos(glm::vec3(0, -2.8f, 0));
+			m_Objects.push_back(ground);
 
-		Objectinator ground("./models/wow/floatingrocks/netherstorm_overhangrock_large_01.obj", "./models/wow/floatingrocks/");
-		ground.setWorldPos(glm::vec3(0, -2.8f, 0));
-		m_Objects.push_back(ground);
+		}
+		catch (std::exception& e)
+		{
+			//Object load failed...
+			printf("Error Loading Object: %s", e.what());
+			return false;
+		}
 
-		Objectinator monolith("./models/wow/monolith/orcstoneburialpyre.obj", "./models/wow/monolith/");
-		monolith.setWorldPos(glm::vec3(-5,-1.0f, 7));
-		m_Objects.push_back(monolith);
-
+		try
+		{
+			Objectinator monolith("./models/wow/monolith/orcstoneburialpyre.obj", "./models/wow/monolith/");
+			monolith.setWorldPos(glm::vec3(-5, -1.0f, 7));
+			m_Objects.push_back(monolith);
+		}
+		catch (std::exception& e)
+		{
+			//Object load failed...
+			printf("Error Loading Object: %s", e.what());
+			return false;
+		}
+		
+		try
+		{
+			Objectinator chest("./models/wow/chest/6hu_enchanting_chest01.obj", "./models/wow/chest/");
+			chest.setWorldPos(glm::vec3(-5, -1.0f, -6));
+			m_Objects.push_back(chest);
+		}
+		catch (const std::exception& e)
+		{
+			//Object load failed...
+			printf("Error Loading Object: %s", e.what());
+			return false;
+		}
+		
+		try
+		{
+			Objectinator walls("./models/wow/walls/duskwoodrockwall.obj", "./models/wow/walls/");
+			walls.setWorldPos(glm::vec3(-10.0f, -1.0f, 0));
+			m_Objects.push_back(walls);
+		}
+		catch (const std::exception& e)
+		{
+			//Object load failed...
+			printf("Error Loading Object: %s", e.what());
+			return false;
+		}
+		
 
 	//particle emitter tute stuff
 		m_Emitter = new ParticleEmitter();
@@ -246,9 +302,14 @@ bool MyApplication::startup()
 		useGreyscale = false;
 
 	//setting up deltatime
-		currentTime = (float)glfwGetTime();
-		deltaTime = 0;
-		m_TimePassed = 0;
+	currentTime = (float)glfwGetTime();
+	deltaTime = 0;
+	m_TimePassed = 0;
+
+	//setting up lightning stuff
+	m_IsLightning = false;
+	m_glCearColour = 0.0f;
+	m_LightningTime = 1.1f;
 
 	return true;
 }
@@ -284,6 +345,31 @@ bool MyApplication::update()
 		ImGui::SliderFloat("Rain Direction X", &m_Emitter->m_direction.x, -3.0f, 3.0f);
 		ImGui::SliderFloat("Rain Direction Z", &m_Emitter->m_direction.z, -3.0f, 3.0f);
 
+	//lightning stuff
+	if (m_IsLightning)
+	{
+		m_LightningTime -= deltaTime;
+		if (m_LightningTime > 0)
+		{
+			m_glCearColour = m_LightningTime;
+			//printf("\nclear colour: %f", m_glCearColour);
+		}
+		else
+		{
+			m_IsLightning = false;
+			m_LightningTime = 1.1f;
+		}
+	}
+	else
+	{
+		float randresult = (rand() % 1000);
+		if (randresult >= 995)
+		{
+			m_IsLightning = true;
+		}
+		//printf("\nRand Result: %f", randresult);
+	}
+
 	return true;
 }
 
@@ -293,7 +379,7 @@ void MyApplication::draw()
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 	glViewport(0, 0, 1600, 900);
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f); //background colour
+		glClearColor(m_glCearColour, m_glCearColour, m_glCearColour, 1.0f); //background colour
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //this cleares the screen and draws the background colour?
 
 		glEnable(GL_DEPTH_TEST); //"enables the depth buffer" - something something how far things are drawn away from camera, like a draw order.
@@ -305,7 +391,7 @@ void MyApplication::draw()
 		glUniformMatrix4fv(projectionViewUniform, 1, GL_FALSE, glm::value_ptr(m_camera->projectView()));
 
 		//glm::vec3 light_direction = glm::vec3(cos(m_rotation), 0, sin(m_rotation));
-		glm::vec3 light_direction = glm::vec3(0, 3, 0);
+		glm::vec3 light_direction = glm::vec3(3, 3, 3);
 		unsigned int lightDirection = glGetUniformLocation(m_programID, "lightDirection");
 		glUniform3fv(lightDirection, 1, &light_direction[0]);
 
@@ -313,11 +399,15 @@ void MyApplication::draw()
 		unsigned int lightColour = glGetUniformLocation(m_programID, "lightColour");
 		glUniform3fv(lightColour, 1, &light_colour[0]);
 
+		glm::vec3 lightning = glm::vec3(m_glCearColour, m_glCearColour, m_glCearColour);
+		unsigned int Lightning = glGetUniformLocation(m_programID, "lightning");
+		glUniform3fv(Lightning, 1, &lightning[0]);
+
 		glm::vec3 camera_position = m_camera->getPosition();
 		unsigned int CameraPos = glGetUniformLocation(m_programID, "CameraPos");
 		glUniform3fv(CameraPos, 1, &camera_position[0]);
 
-		float specular_power = 5.0f;
+		float specular_power = 1.0f;
 		unsigned int SpecPow = glGetUniformLocation(m_programID, "SpecPow");
 		glUniform1f(SpecPow, specular_power);
 
